@@ -1,41 +1,21 @@
 package dictionaryapp;
 
 public class RBTree {
-	public class RBNode {
-		String word;
-		RBNode parent;
-		boolean isRed;
-		RBNode left, right;
-		
-		public RBNode(String word, RBNode parent) {
-			this.word = word;
-			this.parent = parent;
-			isRed = true;
-			left = right = null;
-		}
-		
-		public RBNode(String word, RBNode parent, boolean isRed) {
-			this.word = word;
-			this.parent = parent;
-			this.isRed = isRed;
-			left = right = null;
-		}
-	};
-	
 	private RBNode root;
 	
 	public RBTree() {
 		root = null;
 	}
+	
 
 	public void insert(String word) {
 		if (root == null) {
-			root = new RBNode(word, null, false);
+			root = new RBNode(word, false);
 		}
 	}
 	
 	public void checkWord(String word) {
-		
+		//TODO: search function
 	}
 	
 	private void rrotate(RBNode top) {
@@ -43,9 +23,10 @@ public class RBTree {
 			return;
 		}
 		
-		RBNode newTop = top.left;
-		top.left = newTop.right;
-		newTop.right = top;
+		RBNode newTop = top.getLeftChild();
+		top.getParent().switchChild(top, newTop);
+		top.setLeftChild(newTop.getRightChild());
+		newTop.setRightChild(top);
 	}
 	
 	private void lrotate(RBNode top) {
@@ -53,8 +34,9 @@ public class RBTree {
 			return;
 		}
 		
-		RBNode newTop = top.right;
-		top.right = newTop.left;
-		newTop.left = top;
+		RBNode newTop = top.getRightChild();
+		top.getParent().switchChild(top, newTop);
+		top.setRightChild(newTop.getLeftChild());
+		newTop.setLeftChild(top);
 	}
 }

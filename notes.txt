@@ -1,0 +1,1 @@
+Assertion to check that there are no duplicate words
