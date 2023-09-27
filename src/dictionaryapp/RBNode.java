@@ -1,5 +1,7 @@
 package dictionaryapp;
 
+import org.w3c.dom.Node;
+
 public class RBNode {
 	private String word;
 	private RBNode parent;
@@ -7,14 +9,14 @@ public class RBNode {
 	private RBNode left, right;
 	
 	public RBNode(String word) {
-		this.word = word;
+		this.word = word.toLowerCase();
 		this.parent = null;
 		red = true;
 		left = right = null;
 	}
 	
 	public RBNode(String word, boolean isRed) {
-		this.word = word;
+		this.word = word.toLowerCase();
 		this.parent = null;
 		red = isRed;
 		left = right = null;
@@ -25,10 +27,11 @@ public class RBNode {
 	 * @param child
 	 */
 	public void setLeftChild(RBNode child) {
-		if (this != null) {
-			this.left = child;
-		}
-		this.left.parent = this;
+		assert this != null : "setLeftChild() this is null";
+		
+		this.left = child;
+		if (this.left != null)
+			this.left.parent = this;
 	}
 	
 	/**
@@ -36,10 +39,11 @@ public class RBNode {
 	 * @param child
 	 */
 	public void setRightChild(RBNode child) {
-		if (this != null) {
-			this.right = child;
-		}
-		child.right.parent = this;
+		assert this!=null : "setRightChild() this is null";
+		
+		this.right = child;
+		if (this.right != null)
+			this.right.parent = this;
 	}
 	
 	/**
@@ -55,10 +59,10 @@ public class RBNode {
 		assert currentChild.word.equals(this.left.word) || currentChild.word.equals(this.right.word) : 
 			"currentChild parameter does not match either actual child.";
 
-		if (currentChild.word.equals(this.left.word)) {
+		if (currentChild.equals(this.left)) {
 			this.setLeftChild(newChild);
 		}
-		else if (currentChild.word.equals(this.right.word)) {
+		else if (currentChild.equals(this.right)) {
 			this.setRightChild(newChild);
 		}
 		
@@ -79,26 +83,53 @@ public class RBNode {
 		return parent;
 	}
 	
+	public void setParentToNull() {
+		parent = null;
+	}
 	
-	public String getValue() {
-		return this.word;
+	public String getWord() {
+		return word;
 	}
 	
 	
-	public boolean isRed() {
-		return red;
+	public static boolean isRed(RBNode node) {
+		if (node==null)
+			return false;
+		
+		return node.red;
 	}
 	
-	public boolean isBlack() {
-		return !red;
+	public static boolean isBlack(RBNode node) {
+		if (node == null)
+			return true;
+		
+		return !node.red;
 	}
 	
 	
-	public void makeRed() {
-		this.red = true;
+	public static void makeRed(RBNode node) {
+		if (node == null)
+			return;
+		
+		node.red = true;
 	}
 	
-	public void makeBlack() {
-		this.red = false;
+	public static void makeBlack(RBNode node) {
+		if (node == null)
+			return;
+		
+		node.red = false;
+	}
+	
+	public void switchColor() {
+		red = !red;
+	}
+	
+	
+	public boolean equals(RBNode node) {
+		if (node==null)
+			return false;
+		
+		return word.equals(node.word);
 	}
 };

@@ -1,5 +1,7 @@
 package dictionaryapp;
 
+import java.util.ArrayList;
+
 public class RBTree {
 	private RBNode root;
 	
@@ -7,36 +9,206 @@ public class RBTree {
 		root = null;
 	}
 	
-
-	public void insert(String word) {
-		if (root == null) {
-			root = new RBNode(word, false);
-		}
+	
+	public boolean isEmpty() {
+		return root==null;
 	}
 	
-	public void checkWord(String word) {
-		//TODO: search function
+	private void setRoot(RBNode node) {
+		node.setParentToNull();
+		root = node;
+	}
+	
+
+	public void insert(String word) {
+		word.toLowerCase();
+		
+		if (this.isEmpty()) {
+			root = new RBNode(word, false);
+			return;
+		}
+		
+		RBNode parent = findNode(word);
+		RBNode newNode = new RBNode(word);
+		
+		if (parent.equals(newNode)) {
+			return;
+		}
+		else if (parent.getWord().compareTo(word) > 0) {
+			parent.setRightChild(newNode);
+		}
+		else {
+			parent.setLeftChild(newNode);
+		}
+		
+		fixUpInsertion(newNode);
+	}
+	
+	/**
+	 * Checks that a word exists in the dictionary.
+	 * @param word
+	 * @return
+	 */
+	public boolean containsWord(String word) {
+		if (this.isEmpty()) {
+			return false;
+		}
+		
+		word = word.toLowerCase();
+		
+		return this.findNode(word).getWord().equals(word);
 	}
 	
 	private void rrotate(RBNode top) {
-		if (top==null) {
+		if (top == null) {
 			return;
 		}
 		
 		RBNode newTop = top.getLeftChild();
-		top.getParent().switchChild(top, newTop);
+		if (top.getParent() != null)
+			top.getParent().switchChild(top, newTop);
+		else
+			this.setRoot(newTop);
 		top.setLeftChild(newTop.getRightChild());
 		newTop.setRightChild(top);
 	}
 	
 	private void lrotate(RBNode top) {
-		if (top==null) {
+		if (top == null) {
 			return;
 		}
 		
 		RBNode newTop = top.getRightChild();
-		top.getParent().switchChild(top, newTop);
+		if (top.getParent() != null)
+			top.getParent().switchChild(top, newTop);
+		else
+			this.setRoot(newTop);
 		top.setRightChild(newTop.getLeftChild());
 		newTop.setLeftChild(top);
 	}
-}
+	
+	
+	/**
+	 * Returns either the node containing the input string, or the parent node of where the containing node would be.
+	 * Returns null if the tree is empty.
+	 * @param word
+	 * @return
+	 */
+	private RBNode findNode(String word) {
+		if (this.isEmpty()) {
+			return null;
+		}
+		
+		RBNode curr = root;
+		
+		while ( !word.equals(curr.getWord()) ) {
+			if (curr.getWord().compareTo(word)>0) {
+				if (curr.getRightChild()==null)
+					break;
+					
+				else
+					curr = curr.getRightChild();
+			}
+			else {
+				if (curr.getLeftChild()==null)
+					break;
+				
+				else
+					curr = curr.getLeftChild();
+			}
+		}
+		
+		return curr;
+	}
+
+	
+	/**
+	 * Returns the tree to balance after an insertion.
+	 * @param inserted the newly-inserted node
+	 */
+	private void fixUpInsertion(RBNode inserted) {
+		RBNode target = inserted;
+		while(RBNode.isRed(target.getParent())) {
+			RBNode parent = target.getParent();
+			if (parent.equals(parent.getParent().getLeftChild())) {
+				RBNode uncle = parent.getParent().getRightChild();
+				if (RBNode.isRed(uncle)) {
+					RBNode.makeBlack(parent);
+					RBNode.makeBlack(uncle);
+					RBNode.makeRed(parent.getParent());
+					target = parent.getParent();
+				}
+				else {
+					if (target.equals(parent.getRightChild())) {
+						target = parent;
+						lrotate(target);
+						parent = target.getParent();
+					}
+					RBNode.makeBlack(parent);
+					RBNode.makeRed(parent.getParent());
+					rrotate(parent.getParent());
+				}
+			}
+			else {
+				RBNode uncle = parent.getParent().getLeftChild();
+				if (RBNode.isRed(uncle)) {
+					RBNode.makeBlack(parent);
+					RBNode.makeBlack(uncle);
+					RBNode.makeRed(parent.getParent());
+					target = parent.getParent();
+				}
+				else {
+					if (target.equals(parent.getLeftChild())) {
+						target = parent;
+						rrotate(target);
+						parent = target.getParent();
+					}
+					RBNode.makeBlack(parent);
+					RBNode.makeRed(parent.getParent());
+					lrotate(parent.getParent());
+				}
+			}
+			
+			if (target.equals(root)) {
+				break;
+			}
+		}
+		
+		RBNode.makeBlack(root);
+	}
+	
+	
+	public void breadthFirstSearch() {
+		if (this.isEmpty())
+			return;
+		
+		ArrayList<RBNode> nodes = new ArrayList<RBNode>();
+		boolean nodesIsEmpty = false;
+		
+		nodes.add(root);
+		
+		while (!nodesIsEmpty) {
+			nodesIsEmpty = true;
+			ArrayList<RBNode> subNodes = new ArrayList<RBNode>();
+			for (RBNode node : nodes) {
+				if (node==null) {
+					System.out.print("     x     ");
+					
+					subNodes.add(null);
+					subNodes.add(null);
+				}
+				else {
+					System.out.print(String.format("%1$11s", node.getWord()));
+
+					subNodes.add(node.getLeftChild());
+					subNodes.add(node.getRightChild());
+					
+					nodesIsEmpty = false;
+				}
+			}
+			nodes = subNodes;
+			System.out.println();
+		}
+		System.out.println();
+	}
+};
