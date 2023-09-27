@@ -1,28 +1,32 @@
 package dictionaryapp;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class DictionaryApp {
 
 	public static void main(String[] args) {
 		RBTree dictionary = new RBTree();
-		Scanner in = new Scanner(System.in);
+		Scanner fileScanner;
 		
-		
-		while (true) {
-			System.out.println("Enter a word: ");
-			String response = in.nextLine().toLowerCase();
-			
-			if (response.equals("quit")) {
-				break;
-			}
-			else {
-				dictionary.insert(response);
-				dictionary.breadthFirstSearch();
-			}
+		try {
+			File textFile = new File("HW4InputSample.txt");
+			fileScanner = new Scanner(textFile);
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found.");
+			return;
 		}
 		
-		in.close();
+		while (fileScanner.hasNext()) {
+			dictionary.insert(fileScanner.next());
+		}
+		
+		
+		System.out.println("Worked");
+		dictionary.breadthFirstSearch();
+		
+		fileScanner.close();
 	}
 
 }

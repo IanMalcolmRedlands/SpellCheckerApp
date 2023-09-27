@@ -23,7 +23,8 @@ public class RBTree {
 	
 
 	public void insert(String word) {
-		word.toLowerCase();
+		word = word.toLowerCase();
+		word = word.strip();
 		
 		if (this.isEmpty()) {
 			root = new RBNode(word, false);
@@ -58,8 +59,9 @@ public class RBTree {
 		if (this.isEmpty()) {
 			return false;
 		}
-		
+
 		word = word.toLowerCase();
+		word = word.strip();
 		
 		return this.findNode(word).getWord().equals(word);
 	}
