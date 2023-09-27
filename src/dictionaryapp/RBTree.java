@@ -1,6 +1,8 @@
 package dictionaryapp;
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class RBTree {
 	private RBNode root;
@@ -42,6 +44,9 @@ public class RBTree {
 		}
 		
 		fixUpInsertion(newNode);
+		
+		assert this.rootHasNoParent();
+		assert this.containsNoDuplicatesOrCycles();
 	}
 	
 	/**
@@ -210,5 +215,33 @@ public class RBTree {
 			System.out.println();
 		}
 		System.out.println();
+	}
+
+	
+	private boolean containsNoDuplicatesOrCycles() {
+		ArrayList<RBNode> traversedNodes = new ArrayList<RBNode>();
+		Deque<RBNode> nextNodes = new LinkedList<RBNode>();
+		
+		nextNodes.add(root);
+		
+		while(!nextNodes.isEmpty() ) {
+			RBNode curr = nextNodes.pop();
+			
+			for (RBNode node : traversedNodes) {
+				if (node.equals(curr))
+					return false;
+			}
+			
+			if (curr.getLeftChild()!=null)
+				nextNodes.add(curr.getLeftChild());
+			if (curr.getRightChild()!=null)
+				nextNodes.add(curr.getRightChild());
+		}
+		
+		return true;
+	}
+	
+	private boolean rootHasNoParent() {
+		return root.getParent() == null;
 	}
 };

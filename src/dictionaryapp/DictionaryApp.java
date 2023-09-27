@@ -13,7 +13,7 @@ public class DictionaryApp {
 			System.out.println("Enter a word: ");
 			String response = in.nextLine().toLowerCase();
 			
-			if (response.charAt(0) == 'q') {
+			if (response.equals("quit")) {
 				break;
 			}
 			else {
